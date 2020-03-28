@@ -22,14 +22,14 @@
             android:layout_gravity="center"
             android:layout_marginTop="40dp"
             android:src="@drawable/logo_transparent"
-            android:contentDescription="Logo" />
+            android:contentDescription="@string/logo" />
 
     <Button
         android:id="@+id/New"
         android:layout_width="300dp"
         android:layout_height="70dp"
         android:layout_gravity="center"
-        android:text="Nouveau Match"
+        android:text="@string/nouveau_match"
         android:textColor="#FAFFF2"
         android:layout_marginTop="70dp"
         android:background="@drawable/button"
@@ -40,7 +40,7 @@
             android:layout_width="300dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            android:text="Voir les Matchs"
+            android:text="@string/voir_matchs"
             android:textColor="#FAFFF2"
             android:layout_marginTop="30dp"
             android:background="@drawable/button"

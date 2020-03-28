@@ -7,9 +7,11 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.autofill.FieldClassification;
 import android.view.View;
 import android.widget.Button;
 
@@ -19,9 +21,11 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,7 +44,8 @@ public class Dashboard extends Activity implements LocationListener {  //public 
     String provider;
     protected String latitude, longitude;
     protected boolean gps_enabled, network_enabled;
-
+    SQLiteDatabaseHandler db;
+    SQLiteDatabase database;
     // private GoogleMap mMap;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -54,6 +59,32 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         mapFragment.getMapAsync(this);*/
         Button camera = (Button) findViewById(R.id.camera);
         Button back = (Button) findViewById(R.id.Back);
+        Button save = (Button) findViewById(R.id.Save);
+        final EditText duration = (EditText) findViewById(R.id.saisie_duree);
+        final EditText ace = (EditText) findViewById(R.id.saisie_ace);
+        final EditText fault = (EditText) findViewById(R.id.saisie_fautes);
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int Duree = Integer.parseInt(duration.getText().toString());
+                int Ace = Integer.parseInt(ace.getText().toString());
+                int Faute = Integer.parseInt(fault.getText().toString());
+                Match match = new Match();
+
+                //Match match = new Match(Duree, Ace, Faute);
+
+                match.setDuration(Duree);
+                match.setFaults(Faute);
+                match.setAce(Ace);
+
+                db.addMatch(match);
+                db.close();
+
+                Toast.makeText(Dashboard.this, "Match sauvegardé", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         //Back button
         back.setOnClickListener(new View.OnClickListener() {

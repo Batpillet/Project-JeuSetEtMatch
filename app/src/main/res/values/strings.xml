@@ -1,4 +1,29 @@
 <resources>
     <string name="app_name">JeuSetEtMatch</string>
-    <string name="title_activity_dashboard">Map</string>
+    <string name="title_activity_dashboard" translatable="false">Map</string>
+    <string name="match">Suivi du match</string>
+    <string name="location">Localisation</string>
+    <string name="score">Score</string>
+    <string name="player1">Joueur 1</string>
+    <string name="player2">Joueur 2</string>
+    <string name="stats">Statistiques</string>
+    <string name="time">Durée</string>
+    <string name="points">Points gagnés</string>
+    <string name="ace">Nombre d\'ace</string>
+    <string name="faults">Nombre de fautes</string>
+    <string name="photo">Photo</string>
+    <string name="back_menu">Back to menu</string>
+    <string name="save_match">Save match</string>
+    <string name="suivi_match">Suivi du match</string>
+    <string name="localisation">Localisation</string>
+    <string name="joueur1">Joueur 1</string>
+    <string name="joueur2">Joueur 2</string>
+    <string name="statistiques">Statistiques</string>
+    <string name="duree">Duree</string>
+    <string name="points_gagnes">Points gagnés</string>
+    <string name="nombre_ace">Nombre d\'Ace</string>
+    <string name="nombre_fautes">Nombre de fautes</string>
+    <string name="voir_matchs">Voir les Matchs</string>
+    <string name="nouveau_match">Nouveau Match</string>
+    <string name="logo">Logo</string>
 </resources>

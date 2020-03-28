@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Suivi du match"
+                    android:text="@string/suivi_match"
                     android:textColor="#FFFFFF"
                     android:layout_margin="20dp"
                     android:gravity="center"
@@ -47,7 +47,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Localisation"
+                    android:text="@string/localisation"
                     android:layout_marginLeft="10dp"
                     android:drawableRight="@android:drawable/ic_menu_mylocation"
                     android:layout_marginTop="10dp"
@@ -75,7 +75,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Score"
+            android:text="@string/score"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:drawableRight="@android:drawable/ic_menu_view"
@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textSize="17sp"
-                    android:text="Joueur 1" />
+                    android:text="@string/joueur1" />
 
                 <EditText
                     android:id="@+id/Set1j1"
@@ -148,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textSize="17sp"
-                    android:text="Joueur 2" />
+                    android:text="@string/joueur2" />
 
                 <EditText
                     android:id="@+id/Set1j2"
@@ -186,7 +186,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Statistiques"
+                    android:text="@string/statistiques"
                     android:drawableRight="@android:drawable/ic_menu_recent_history"
                     android:layout_marginLeft="10dp"
                     android:textSize="25sp"
@@ -209,7 +209,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Durée"
+                    android:text="@string/duree"
                     android:layout_weight="1"
                     android:textSize="17sp"
                     android:layout_marginLeft="10dp" />
@@ -235,7 +235,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Points gagnés"
+                    android:text="@string/points_gagnes"
                     android:layout_weight="1"
                     android:textSize="17sp"
                     android:layout_marginLeft="10dp" />
@@ -261,7 +261,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Nombre d'ace"
+                    android:text="@string/nombre_ace"
                     android:layout_weight="1"
                     android:textSize="17sp"
                     android:layout_marginLeft="10dp" />
@@ -286,7 +286,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Nombre de fautes"
+                    android:text="@string/nombre_fautes"
                     android:layout_weight="1"
                     android:textSize="17sp"
                     android:layout_marginLeft="10dp" />
@@ -314,7 +314,7 @@
                 android:drawableTop="@android:drawable/ic_menu_camera"
                 android:layout_weight="2"
                 android:background="@drawable/button2"
-                android:text="Photo"
+                android:text="@string/photo"
                 android:textSize="15sp"
                 android:textColor="#FFFFFF" />
 
@@ -331,7 +331,7 @@
                     android:layout_weight="2"
                     android:background="@drawable/buttonback"
                     android:drawableTop="@android:drawable/ic_menu_revert"
-                    android:text="Back to menu"
+                    android:text="@string/back_menu"
 
                     android:textSize="18sp"
                     android:textColor="#FFFFFF" />
@@ -343,7 +343,7 @@
                     android:layout_weight="2"
                     android:drawableTop="@android:drawable/ic_menu_save"
                     android:background="@drawable/buttonsave"
-                    android:text="Save match"
+                    android:text="@string/save_match"
                     android:textSize="18sp"
                     android:textColor="#FFFFFF" />
 
