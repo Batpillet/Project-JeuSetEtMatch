@@ -1,26 +1,25 @@
 package com.example.jeusetetmatch;
 
-public class Match {
+public class Match extends Joueur{
 
      private int id;
      private int duration;
      private int ace;
      private int faults;
-     private int longitude;
-     private int latitude;
+     private double longitude;
+     private double latitude;
+     private Joueur joueur1;
+    private Joueur joueur2;
 
-    public Match(){
-
-    }
-
-    public Match(int id, int duration, int ace, int faults, int longitude, int latitude){
+    public Match(int duration, int ace, int faults, double longitude, double latitude, Joueur joueur1, Joueur joueur2){
         super();
-        this.id = id;
         this.duration = duration;
         this.ace = ace;
         this.latitude = latitude;
         this.longitude = longitude;
         this.faults = faults;
+        this.joueur1 = joueur1;
+        this.joueur2 = joueur2;
     }
 
     public Match(int duration, int ace, int faults){
@@ -62,11 +61,11 @@ public class Match {
         this.faults = faults;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
@@ -78,6 +77,29 @@ public class Match {
         this.latitude = latitude;
     }
 
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Joueur getJoueur1() {
+        return joueur1;
+    }
+
+    public void setJoueur1(Joueur joueur1) {
+        this.joueur1 = joueur1;
+    }
+
+    public Joueur getJoueur2() {
+        return joueur2;
+    }
+
+    public void setJoueur2(Joueur joueur2) {
+        this.joueur2 = joueur2;
+    }
     @Override
     public String toString(){
         return id + " " + duration + " " + faults + " " + ace;

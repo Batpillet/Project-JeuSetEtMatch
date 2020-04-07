@@ -15,15 +15,17 @@ import android.util.Log;
 
 public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 15;
+    private static final int DATABASE_VERSION = 16;
     private static final String DATABASE_NAME = "MatchDB.db";
     private static final String TABLE_NAME = "tablematch";
     private static final String KEY_ID = "id";
     private static final String KEY_DURATION = "duration";
     private static final String KEY_FAULTS = "faults";
     private static final String KEY_ACE = "ace";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_LONGITUDE = "longitude";
 
-    private static final String TABLE_CREATE = "CREATE TABLE "+TABLE_NAME+" ( _id INTEGER PRIMARY KEY AUTOINCREMENT , "+KEY_DURATION+" INTEGER , "+KEY_ACE+" INTEGER , "+KEY_FAULTS+" INTEGER )";
+    private static final String TABLE_CREATE = "CREATE TABLE "+TABLE_NAME+" ( _id INTEGER PRIMARY KEY AUTOINCREMENT , "+KEY_LATITUDE+" TEXT , "+KEY_LONGITUDE+" TEXT , "+KEY_DURATION+" INTEGER , "+KEY_ACE+" INTEGER , "+KEY_FAULTS+" INTEGER )";
 
     public SQLiteDatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,6 +47,8 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     public void addMatch(Match m) {
         Log.i("Ajout match : ", m.toString());
         ContentValues values = new ContentValues();
+        values.put(KEY_LATITUDE, m.getLatitude());
+        values.put(KEY_LONGITUDE, m.getLongitude());
         values.put(KEY_DURATION, m.getDuration());
         values.put(KEY_FAULTS, m.getFaults());
         values.put(KEY_ACE, m.getAce());

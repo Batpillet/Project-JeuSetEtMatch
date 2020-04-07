@@ -2,6 +2,7 @@ package com.example.jeusetetmatch;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -10,8 +11,11 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.service.autofill.FieldClassification;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -36,7 +40,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Dashboard extends Activity implements LocationListener {  //public class Dashboard extends FragmentActivity implements OnMapReadyCallback {
@@ -53,36 +61,25 @@ public class Dashboard extends Activity implements LocationListener {  //public 
     SQLiteDatabaseHandler db;
     ArrayList<Match> listMatch;
     ArrayAdapter adapter;
-
+    Location location;
+    double lati, longi;
+    String currentPhotoPath;
+    static final int REQUEST_TAKE_PHOTO = 1;
     // private GoogleMap mMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        Button camera = (Button) findViewById(R.id.camera);
-        Button back = (Button) findViewById(R.id.Back);
-        Button save = (Button) findViewById(R.id.Save);
+        Button camera = findViewById(R.id.camera);
+        Button back =  findViewById(R.id.Back);
+        Button save = findViewById(R.id.Save);
         duration = findViewById(R.id.saisie_duree);
         ace = findViewById(R.id.saisie_ace);
         fault = findViewById(R.id.saisie_fautes);
-
-        txtLat = (TextView) findViewById(R.id.location);
-
-
+        txtLat =  findViewById(R.id.location);
 
         db = new SQLiteDatabaseHandler(this);
-
-        /*Bundle extras = getIntent().getExtras();
-        int Value = extras.getInt("id");
-        Match match = new Match();
-        Cursor res = db.getData(Value);
-        db.getWritableDatabase();
-        db.addMatch(Duree, Faute, Ace);
-
-        Match matchBDD = (Match) db.getData(Value);
-
-        db.close();*/
 
         //Back button
         back.setOnClickListener(new View.OnClickListener() {
@@ -97,8 +94,7 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                startActivityForResult(intent, 0);
+                dispatchTakePictureIntent();
             }
         });
 
@@ -128,18 +124,72 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         int Ace = Integer.parseInt(ace.getText().toString());
         int Faute = Integer.parseInt(fault.getText().toString());
 
-        db.addMatch(new Match(Duree, Ace, Faute));
+        db.addMatch(new Match(Duree, Ace, Faute, lati, longi));
         Log.i("Dashboard", "OK");
         Log.i("Dashboard", " value : " + db.getCount());
-        //Log.i("Dashboard", db.getMatch(0).toString());
-       // db.getCount();
         db.close();
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            galleryAddPic();
+        }
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
+    @Override
     public void onLocationChanged(Location location) {
-        txtLat = (TextView) findViewById(R.id.location);
+        txtLat = findViewById(R.id.location);
         txtLat.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
+        lati = location.getLatitude();
+        longi = location.getLongitude();
     }
 
     @Override
@@ -157,24 +207,3 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         Log.d("Latitude","status");
     }
     }
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-   /* @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }*/
-

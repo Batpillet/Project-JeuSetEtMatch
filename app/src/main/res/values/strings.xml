@@ -16,8 +16,8 @@
     <string name="save_match">Save match</string>
     <string name="suivi_match">Suivi du match</string>
     <string name="localisation">Localisation</string>
-    <string name="joueur1">Joueur 1</string>
-    <string name="joueur2">Joueur 2</string>
+    <string name="joueur1">J1 </string>
+    <string name="joueur2">J2 </string>
     <string name="statistiques">Statistiques</string>
     <string name="duree">Duree</string>
     <string name="points_gagnes">Points gagnés</string>

@@ -48,7 +48,7 @@ public class Stats extends AppCompatActivity {
             Toast.makeText(this, "Aucune donnée", Toast.LENGTH_SHORT).show();
         }else{
             while(cursor.moveToNext()){
-                listMatch.add(cursor.getString(1));
+                listMatch.add(cursor.getString(2));
             }
             adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listMatch);
             matchList.setAdapter(adapter);
