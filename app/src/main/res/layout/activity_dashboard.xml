@@ -344,6 +344,7 @@
                     android:drawableTop="@android:drawable/ic_menu_save"
                     android:background="@drawable/buttonsave"
                     android:text="@string/save_match"
+                    android:onClick="addM"
                     android:textSize="18sp"
                     android:textColor="#FFFFFF" />
 

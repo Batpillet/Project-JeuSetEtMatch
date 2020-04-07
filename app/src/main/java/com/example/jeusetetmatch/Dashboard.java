@@ -7,12 +7,14 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.autofill.FieldClassification;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import android.os.Bundle;
@@ -34,6 +36,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Dashboard extends Activity implements LocationListener {  //public class Dashboard extends FragmentActivity implements OnMapReadyCallback {
 
     protected LocationManager locationManager;
@@ -44,47 +49,40 @@ public class Dashboard extends Activity implements LocationListener {  //public 
     String provider;
     protected String latitude, longitude;
     protected boolean gps_enabled, network_enabled;
+    EditText duration, ace, fault;
     SQLiteDatabaseHandler db;
-    SQLiteDatabase database;
-    // private GoogleMap mMap;
+    ArrayList<Match> listMatch;
+    ArrayAdapter adapter;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    // private GoogleMap mMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-      /*  SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);*/
+
         Button camera = (Button) findViewById(R.id.camera);
         Button back = (Button) findViewById(R.id.Back);
         Button save = (Button) findViewById(R.id.Save);
-        final EditText duration = (EditText) findViewById(R.id.saisie_duree);
-        final EditText ace = (EditText) findViewById(R.id.saisie_ace);
-        final EditText fault = (EditText) findViewById(R.id.saisie_fautes);
+        duration = findViewById(R.id.saisie_duree);
+        ace = findViewById(R.id.saisie_ace);
+        fault = findViewById(R.id.saisie_fautes);
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        txtLat = (TextView) findViewById(R.id.location);
 
-                int Duree = Integer.parseInt(duration.getText().toString());
-                int Ace = Integer.parseInt(ace.getText().toString());
-                int Faute = Integer.parseInt(fault.getText().toString());
-                Match match = new Match();
 
-                //Match match = new Match(Duree, Ace, Faute);
 
-                match.setDuration(Duree);
-                match.setFaults(Faute);
-                match.setAce(Ace);
+        db = new SQLiteDatabaseHandler(this);
 
-                db.addMatch(match);
-                db.close();
+        /*Bundle extras = getIntent().getExtras();
+        int Value = extras.getInt("id");
+        Match match = new Match();
+        Cursor res = db.getData(Value);
+        db.getWritableDatabase();
+        db.addMatch(Duree, Faute, Ace);
 
-                Toast.makeText(Dashboard.this, "Match sauvegardé", Toast.LENGTH_SHORT).show();
-            }
-        });
+        Match matchBDD = (Match) db.getData(Value);
+
+        db.close();*/
 
         //Back button
         back.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +102,12 @@ public class Dashboard extends Activity implements LocationListener {  //public 
             }
         });
 
-        txtLat = (TextView) findViewById(R.id.location);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addM(v);
+            }
+        });
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -119,6 +122,20 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
+
+    public void addM(View view){
+        int Duree = Integer.parseInt(duration.getText().toString());
+        int Ace = Integer.parseInt(ace.getText().toString());
+        int Faute = Integer.parseInt(fault.getText().toString());
+
+        db.addMatch(new Match(Duree, Ace, Faute));
+        Log.i("Dashboard", "OK");
+        Log.i("Dashboard", " value : " + db.getCount());
+        //Log.i("Dashboard", db.getMatch(0).toString());
+       // db.getCount();
+        db.close();
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         txtLat = (TextView) findViewById(R.id.location);
