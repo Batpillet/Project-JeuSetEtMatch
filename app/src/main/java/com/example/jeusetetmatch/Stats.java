@@ -30,7 +30,7 @@ public class Stats extends AppCompatActivity {
         db = new SQLiteDatabaseHandler(this);
         listMatch = new ArrayList<>();
 
-        viewData(); 
+        viewData();
 
         matchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -48,11 +48,23 @@ public class Stats extends AppCompatActivity {
             Toast.makeText(this, "Aucune donnée", Toast.LENGTH_SHORT).show();
         }else{
             while(cursor.moveToNext()){
-                listMatch.add(cursor.getString(2));
+                listMatch.add(cursor.getString(0) + "  -  " + cursor.getString(1) + "   VS   " + cursor.getString(3) + "\n\n      "
+                        + cursor.getString(5) +"  " + cursor.getString(6) +"  " + cursor.getString(7) +"\n      "
+                        + cursor.getString(8) +"  " + cursor.getString(9) +"  " + cursor.getString(10)
+                        + "\n\nDurée : " + cursor.getString(13));
             }
             adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listMatch);
             matchList.setAdapter(adapter);
         }
+    }
+
+    private String gagnant(boolean gagnant){
+        String winner = "";
+        if(gagnant){
+            winner = "ok";
+            return winner;
+        }else
+            return winner;
     }
 }
 

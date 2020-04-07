@@ -15,6 +15,11 @@ public class Joueur {
         this.gagnant = gagnant;
     }
 
+    public Joueur(String nom, boolean gagnant){
+        this.nom = nom;
+        this.gagnant = gagnant;
+    }
+
     public Joueur() {
 
     }
@@ -41,5 +46,9 @@ public class Joueur {
 
     public void setGagnant(boolean gagnant) {
         this.gagnant = gagnant;
+    }
+
+    public String string(){
+        return nom + " " + gagnant;
     }
 }

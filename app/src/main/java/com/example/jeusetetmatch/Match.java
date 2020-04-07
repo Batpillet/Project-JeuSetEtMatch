@@ -9,7 +9,7 @@ public class Match extends Joueur{
      private double longitude;
      private double latitude;
      private Joueur joueur1;
-    private Joueur joueur2;
+     private Joueur joueur2;
 
     public Match(int duration, int ace, int faults, double longitude, double latitude, Joueur joueur1, Joueur joueur2){
         super();
@@ -100,8 +100,9 @@ public class Match extends Joueur{
     public void setJoueur2(Joueur joueur2) {
         this.joueur2 = joueur2;
     }
+
     @Override
     public String toString(){
-        return id + " " + duration + " " + faults + " " + ace;
+        return id + " " + duration + " " + faults + " " + ace+ " " + joueur1.string() + " " + joueur2.string();
     }
 }

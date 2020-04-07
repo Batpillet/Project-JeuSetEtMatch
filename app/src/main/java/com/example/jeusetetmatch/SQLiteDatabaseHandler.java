@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 16;
+    private static final int DATABASE_VERSION = 19;
     private static final String DATABASE_NAME = "MatchDB.db";
     private static final String TABLE_NAME = "tablematch";
     private static final String KEY_ID = "id";
@@ -24,8 +24,18 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_ACE = "ace";
     private static final String KEY_LATITUDE = "latitude";
     private static final String KEY_LONGITUDE = "longitude";
+    private static final String KEY_NAME1 = "name1";
+    private static final String KEY_WINNER1 = "winner1";
+    private static final String KEY_SET1J1 = "set1j1";
+    private static final String KEY_SET2J1 = "set2j1";
+    private static final String KEY_SET3J1 = "set3j1";
+    private static final String KEY_NAME2 = "name2";
+    private static final String KEY_WINNER2 = "winner2";
+    private static final String KEY_SET1J2 = "set1j2";
+    private static final String KEY_SET2J2 = "set2j2";
+    private static final String KEY_SET3J2 = "set3j2";
 
-    private static final String TABLE_CREATE = "CREATE TABLE "+TABLE_NAME+" ( _id INTEGER PRIMARY KEY AUTOINCREMENT , "+KEY_LATITUDE+" TEXT , "+KEY_LONGITUDE+" TEXT , "+KEY_DURATION+" INTEGER , "+KEY_ACE+" INTEGER , "+KEY_FAULTS+" INTEGER )";
+    private static final String TABLE_CREATE = "CREATE TABLE "+TABLE_NAME+" ( KEY_ID INTEGER PRIMARY KEY AUTOINCREMENT , "+KEY_NAME2+" TEXT , "+KEY_WINNER2+" TEXT , "+KEY_NAME1+" TEXT , "+KEY_WINNER1+" TEXT , "+KEY_SET1J1+" INTEGER , "+KEY_SET2J1+" INTEGER , "+KEY_SET3J1+" INTEGER , "+KEY_SET1J2+" INTEGER , "+KEY_SET2J2+" INTEGER , "+KEY_SET3J2+" INTEGER , "+KEY_LATITUDE+" TEXT , "+KEY_LONGITUDE+" TEXT , "+KEY_DURATION+" INTEGER , "+KEY_ACE+" INTEGER , "+KEY_FAULTS+" INTEGER )";
 
     public SQLiteDatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -47,6 +57,16 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     public void addMatch(Match m) {
         Log.i("Ajout match : ", m.toString());
         ContentValues values = new ContentValues();
+        values.put(KEY_NAME1, m.getJoueur1().getNom());
+        values.put(KEY_NAME2, m.getJoueur2().getNom());
+        values.put(KEY_WINNER1, m.getJoueur1().isGagnant());
+        values.put(KEY_WINNER2, m.getJoueur2().isGagnant());
+        values.put(KEY_SET1J1, m.getJoueur1().getJeu().get(0));
+        values.put(KEY_SET2J1, m.getJoueur1().getJeu().get(1));
+        values.put(KEY_SET3J1, m.getJoueur1().getJeu().get(2));
+        values.put(KEY_SET1J2, m.getJoueur1().getJeu().get(0));
+        values.put(KEY_SET2J2, m.getJoueur1().getJeu().get(1));
+        values.put(KEY_SET3J2, m.getJoueur1().getJeu().get(2));
         values.put(KEY_LATITUDE, m.getLatitude());
         values.put(KEY_LONGITUDE, m.getLongitude());
         values.put(KEY_DURATION, m.getDuration());
@@ -111,7 +131,6 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     }*/
 
     public int getCount() {
-
         String countQuery = "SELECT * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
@@ -122,7 +141,6 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public Cursor viewData() {
-
         String query = "SELECT * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);

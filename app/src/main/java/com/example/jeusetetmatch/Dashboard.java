@@ -28,6 +28,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import android.util.Log;
@@ -57,7 +58,7 @@ public class Dashboard extends Activity implements LocationListener {  //public 
     String provider;
     protected String latitude, longitude;
     protected boolean gps_enabled, network_enabled;
-    EditText duration, ace, fault;
+    EditText duration, ace, fault, nomj1, nomj2, set1j1, set2j1, set3j1, set1j2, set2j2, set3j2;
     SQLiteDatabaseHandler db;
     ArrayList<Match> listMatch;
     ArrayAdapter adapter;
@@ -65,6 +66,7 @@ public class Dashboard extends Activity implements LocationListener {  //public 
     double lati, longi;
     String currentPhotoPath;
     static final int REQUEST_TAKE_PHOTO = 1;
+    RadioButton gagnantj1, gagnantj2;
     // private GoogleMap mMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,16 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         ace = findViewById(R.id.saisie_ace);
         fault = findViewById(R.id.saisie_fautes);
         txtLat =  findViewById(R.id.location);
+        nomj1 = findViewById(R.id.Joueur1);
+        nomj2 = findViewById(R.id.Joueur2);
+        gagnantj1 = findViewById(R.id.radioj1);
+        gagnantj2 = findViewById(R.id.radioj2);
+        set1j1 = findViewById(R.id.Set1j1);
+        set2j1 = findViewById(R.id.Set2j1);
+        set3j1 = findViewById(R.id.Set3j1);
+        set1j2 = findViewById(R.id.Set1j2);
+        set2j2 = findViewById(R.id.Set2j2);
+        set3j2 = findViewById(R.id.Set3j2);
 
         db = new SQLiteDatabaseHandler(this);
 
@@ -102,6 +114,7 @@ public class Dashboard extends Activity implements LocationListener {  //public 
             @Override
             public void onClick(View v) {
                 addM(v);
+                Toast.makeText(Dashboard.this, "Match sauvegardé !", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -123,11 +136,50 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         int Duree = Integer.parseInt(duration.getText().toString());
         int Ace = Integer.parseInt(ace.getText().toString());
         int Faute = Integer.parseInt(fault.getText().toString());
+        int s1j1 = Integer.parseInt(set1j1.getText().toString());
+        int s2j1 = Integer.parseInt(set2j1.getText().toString());
+        int s3j1 = Integer.parseInt(set3j1.getText().toString());
+        int s1j2 = Integer.parseInt(set1j2.getText().toString());
+        int s2j2 = Integer.parseInt(set2j2.getText().toString());
+        int s3j2 = Integer.parseInt(set3j2.getText().toString());
+        String Nomj1 = nomj1.getText().toString();
+        String Nomj2 = nomj2.getText().toString();
+        boolean Gagnantj1 = gagnantj1.isChecked();
+        boolean Gagnantj2 = gagnantj2.isChecked();
+        ArrayList<Integer> list = new ArrayList<Integer>();
 
-        db.addMatch(new Match(Duree, Ace, Faute, lati, longi));
+        list.add(s1j1);
+        list.add(s2j1);
+        list.add(s3j1);
+        list.add(s1j2);
+        list.add(s2j2);
+        list.add(s3j2);
+
+        Joueur j1 = new Joueur(Nomj1, list, Gagnantj1);
+        Joueur j2 = new Joueur(Nomj2, list, Gagnantj2);
+
+        db.addMatch(new Match(Duree, Ace, Faute, lati, longi, j1, j2));
         Log.i("Dashboard", "OK");
         Log.i("Dashboard", " value : " + db.getCount());
         db.close();
+    }
+
+    public void handleRadio1(Match m, RadioButton button){
+        if(button.isChecked()){
+            m.getJoueur1().setGagnant(true);
+        }
+        else{
+            m.getJoueur1().setGagnant(false);
+        }
+    }
+
+    public void handleRadio2(Match m, RadioButton button){
+        if(button.isChecked()){
+            m.getJoueur2().setGagnant(true);
+        }
+        else{
+            m.getJoueur2().setGagnant(false);
+        }
     }
 
     @Override
