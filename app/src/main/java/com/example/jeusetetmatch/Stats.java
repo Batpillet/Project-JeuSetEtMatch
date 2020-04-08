@@ -51,20 +51,19 @@ public class Stats extends AppCompatActivity {
                 listMatch.add(cursor.getString(0) + "  -  " + cursor.getString(1) + "   VS   " + cursor.getString(3) + "\n\n      "
                         + cursor.getString(5) +"  " + cursor.getString(6) +"  " + cursor.getString(7) +"\n      "
                         + cursor.getString(8) +"  " + cursor.getString(9) +"  " + cursor.getString(10)
-                        + "\n\nDurée : " + cursor.getString(13));
+                        + "\n\nDurée : " + cursor.getString(13) + " min" + "     Gagnant : " + handleWinner(cursor));
             }
             adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listMatch);
             matchList.setAdapter(adapter);
         }
     }
 
-    private String gagnant(boolean gagnant){
-        String winner = "";
-        if(gagnant){
-            winner = "ok";
-            return winner;
-        }else
-            return winner;
+    private String handleWinner(Cursor cursor){
+        if(cursor.getString(2).equals(String.valueOf(1)) || cursor.getString(4).equals(String.valueOf(0)) ){
+            return cursor.getString(1);
+        }else{
+            return cursor.getString(3);
+        }
     }
 }
 
