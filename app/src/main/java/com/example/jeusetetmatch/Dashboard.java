@@ -1,7 +1,10 @@
 package com.example.jeusetetmatch;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
@@ -11,12 +14,16 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Telephony;
 import android.service.autofill.FieldClassification;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -27,7 +34,9 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -38,6 +47,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -47,13 +57,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Dashboard extends Activity implements LocationListener {  //public class Dashboard extends FragmentActivity implements OnMapReadyCallback {
 
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     protected Context context;
-    TextView txtLat;
+    TextView txtLat, localisation;
     String lat;
     String provider;
     protected String latitude, longitude;
@@ -68,14 +79,17 @@ public class Dashboard extends Activity implements LocationListener {  //public 
     static final int REQUEST_TAKE_PHOTO = 1;
     RadioButton gagnantj1, gagnantj2;
     // private GoogleMap mMap;
+    ImageView imageView;
+    Button camera, back, save;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        Button camera = findViewById(R.id.camera);
-        Button back =  findViewById(R.id.Back);
-        Button save = findViewById(R.id.Save);
+        camera = findViewById(R.id.camera);
+        back =  findViewById(R.id.Back);
+        save = findViewById(R.id.Save);
         duration = findViewById(R.id.saisie_duree);
         ace = findViewById(R.id.saisie_ace);
         fault = findViewById(R.id.saisie_fautes);
@@ -90,8 +104,27 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         set1j2 = findViewById(R.id.Set1j2);
         set2j2 = findViewById(R.id.Set2j2);
         set3j2 = findViewById(R.id.Set3j2);
+        imageView = findViewById(R.id.image_view);
 
         db = new SQLiteDatabaseHandler(this);
+
+        gagnantj1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    gagnantj2.setEnabled(false); //Comme il est impossible d'avoir 2 gagnants, on desactive le second bouton radio lors de la selection du premier
+                } //Cette action necessite un listener sur le bouton radio
+            }
+        });
+
+        gagnantj2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    gagnantj1.setEnabled(false);
+                }
+            }
+        });
 
         //Back button
         back.setOnClickListener(new View.OnClickListener() {
@@ -102,19 +135,38 @@ public class Dashboard extends Activity implements LocationListener {  //public 
             }
         });
 
-        //Camera button
+        if (ContextCompat.checkSelfPermission(Dashboard.this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(Dashboard.this,
+                    new String[]{
+                            Manifest.permission.CAMERA
+                    },
+                    100);
+        }
+
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatchTakePictureIntent();
+                //dispatchTakePictureIntent();
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 100);
             }
         });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addM(v);
-                Toast.makeText(Dashboard.this, "Match sauvegardé !", Toast.LENGTH_SHORT).show();
+                if(TextUtils.isEmpty(duration.getText().toString()) || TextUtils.isEmpty(ace.getText().toString()) || TextUtils.isEmpty(fault.getText().toString())
+                        || TextUtils.isEmpty(set1j1.getText().toString()) || TextUtils.isEmpty(set1j2.getText().toString()) || TextUtils.isEmpty(set2j1.getText().toString())
+                        || TextUtils.isEmpty(set2j2.getText().toString()) || TextUtils.isEmpty(set3j1.getText().toString()) || TextUtils.isEmpty(set3j2.getText().toString())
+                        || TextUtils.isEmpty(nomj1.getText().toString()) || TextUtils.isEmpty(nomj2.getText().toString()) || TextUtils.isEmpty(gagnantj1.getText().toString())
+                        || TextUtils.isEmpty(gagnantj2.getText().toString())){
+                    Toast.makeText(Dashboard.this, "donnée(s) manquante(s)", Toast.LENGTH_SHORT).show(); //Blindage
+                }
+                else {
+                    addM(v); //ajout données SQLite
+                    Toast.makeText(Dashboard.this, "Match sauvegardé !", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -146,116 +198,84 @@ public class Dashboard extends Activity implements LocationListener {  //public 
         String Nomj2 = nomj2.getText().toString();
         boolean Gagnantj1 = gagnantj1.isChecked();
         boolean Gagnantj2 = gagnantj2.isChecked();
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList<Integer> listj1 = new ArrayList<Integer>();
+        ArrayList<Integer> listj2 = new ArrayList<Integer>();
 
-        list.add(s1j1);
-        list.add(s2j1);
-        list.add(s3j1);
-        list.add(s1j2);
-        list.add(s2j2);
-        list.add(s3j2);
+        listj1.add(s1j1);
+        listj1.add(s2j1);
+        listj1.add(s3j1);
+        listj2.add(s1j2);
+        listj2.add(s2j2);
+        listj2.add(s3j2);
 
-        Joueur j1 = new Joueur(Nomj1, list, Gagnantj1);
-        Joueur j2 = new Joueur(Nomj2, list, Gagnantj2);
+        Joueur j1 = new Joueur(Nomj1, listj1, Gagnantj1);
+        Joueur j2 = new Joueur(Nomj2, listj2, Gagnantj2);
 
         db.addMatch(new Match(Duree, Ace, Faute, lati, longi, j1, j2));
-        Log.i("Dashboard", "OK");
         Log.i("Dashboard", " value : " + db.getCount());
         db.close();
     }
 
-    public void handleRadio1(Match m, RadioButton button){
-        if(button.isChecked()){
-            m.getJoueur1().setGagnant(true);
-        }
-        else{
-            m.getJoueur1().setGagnant(false);
-        }
-    }
+    public String getAddress(Context ctx, double lat, double lng){
+        String fullAdd = null;
+        try{
+            Geocoder geocoder = new Geocoder(ctx, Locale.getDefault());
+            List<android.location.Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            if(addresses.size()>0){
+                Address address = addresses.get(0);
+                fullAdd = address.getAddressLine(0);
 
-    public void handleRadio2(Match m, RadioButton button){
-        if(button.isChecked()){
-            m.getJoueur2().setGagnant(true);
+                String location = address.getLocality();
+                String zip = address.getPostalCode();
+                String country = address.getCountryName();
+            }
+        }catch (IOException ex){
+            ex.printStackTrace();
         }
-        else{
-            m.getJoueur2().setGagnant(false);
-        }
+        return fullAdd;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            galleryAddPic();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) { //données de l'image + enregistrement dans la galerie
+        if(requestCode == 100){
+            Bitmap captureImage = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(captureImage);
+            MediaStore.Images.Media.insertImage(getContentResolver(),
+                    captureImage, "image name", "description of image");
+            //message when picture saved to camera roll
+            Toast.makeText(Dashboard.this,"Photo enregistrée dans la galerie",Toast.LENGTH_LONG).show();
         }
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(currentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
     }
 
     @Override
     public void onLocationChanged(Location location) {
         txtLat = findViewById(R.id.location);
-        txtLat.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
+        String address = getAddress(this, location.getLatitude(), location.getLongitude());
+        txtLat.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude() + "\nAdresse : " + address);
+
         lati = location.getLatitude();
         longi = location.getLongitude();
     }
 
     @Override
-    public void onProviderDisabled(String provider) {
-        Log.d("Latitude","disable");
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Log.d("Latitude","enable");
+
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.d("Latitude","status");
+    public void onProviderDisabled(String provider) {
+
     }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
+}
+
+

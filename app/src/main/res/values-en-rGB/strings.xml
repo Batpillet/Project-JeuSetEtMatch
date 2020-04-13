@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JeuSetEtMatch</string>
+    <string name="dashboard_title">Current match</string>
+    <string name="dashboard_location">Location</string>
+    <string name="dashboard_score">Score</string>
+    <string name="dashboard_stats">Statistics</string>
+    <string name="dashboard_stats_time">Match length</string>
+    <string name="dashboard_stats_points">Points scored</string>
+    <string name="dashboard_stats_ace">Aces scored</string>
+    <string name="dashboard_stats_faults">Number of faults</string>
+    <string name="dashboard_button_photo">Take a pic !</string>
+    <string name="dashboard_button_back_menu">Back to menu</string>
+    <string name="dashboard_button_save_match">Save match</string>
+    <string name="menu_button_previous_match">Show match</string>
+    <string name="menu_button_new_match">New match</string>
+    <string name="manu_logo">Logo</string>
+    <string name="history_title">Previous match</string>
+</resources>

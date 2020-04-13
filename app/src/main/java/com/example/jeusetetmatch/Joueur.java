@@ -49,6 +49,6 @@ public class Joueur {
     }
 
     public String string(){
-        return nom + " " + gagnant;
+        return nom + " " + gagnant + " " + getJeu().toString();
     }
 }

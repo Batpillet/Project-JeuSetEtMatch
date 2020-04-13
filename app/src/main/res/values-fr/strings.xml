@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">JeuSetEtMatch</string>
     <string name="dashboard_title">Suivi du match</string>
@@ -8,9 +9,9 @@
     <string name="dashboard_stats_points">Points gagnés</string>
     <string name="dashboard_stats_ace">Nombre d\'ace</string>
     <string name="dashboard_stats_faults">Nombre de fautes</string>
-    <string name="dashboard_button_photo">Photo</string>
-    <string name="dashboard_button_back_menu">Back to menu</string>
-    <string name="dashboard_button_save_match">Save match</string>
+    <string name="dashboard_button_photo">Prenez une photo du match !</string>
+    <string name="dashboard_button_back_menu">Revenir au menu</string>
+    <string name="dashboard_button_save_match">Sauvegarder</string>
     <string name="menu_button_previous_match">Voir les Matchs</string>
     <string name="menu_button_new_match">Nouveau Match</string>
     <string name="manu_logo">Logo</string>
